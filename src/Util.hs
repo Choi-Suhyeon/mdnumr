@@ -6,13 +6,13 @@
 
 module Util 
     ( Vector          , N7
-    , StartBase(..)   , baseToNum
-    , Range           , pattern RangeView
-    , HeadingRange    , PrintRange
+    , StartBase(..)   , Range
+    , PrintRange      , pattern RangeView
     , mkRange         , inRange
     , lowerLimit      , upperLimit
     , updateLower     , updateUpper
     , updateLowerWith , updateUpperWith
+    , baseToNum
     ) 
   where
 
@@ -32,9 +32,7 @@ baseToNum :: Num a => StartBase -> a
 baseToNum ZeroBased = 0
 baseToNum OneBased  = 1
 
-type HeadingRange = Range Word
-
-type PrintRange n = Range (Finite n)
+type PrintRange = Range (Finite N7)
 
 data Range a
     = Range 
@@ -50,9 +48,10 @@ pattern RangeView lo hi <- (lowerLimit &&& upperLimit -> (lo, hi))
 {-# COMPLETE RangeView #-}
 
 mkRange :: Ord a => a -> a -> Maybe (Range a)
-mkRange x y = case compare x y of
-    GT -> Nothing
-    _  -> Just $ Range x y
+mkRange x y = 
+    case compare x y of
+        GT -> Nothing
+        _  -> Just $ Range x y
 
 inRange :: Ord a => Range a -> a -> Bool
 inRange (Range n m) x = n <= x && x <= m
@@ -64,15 +63,18 @@ updateUpper :: Ord a => a -> Range a -> Maybe (Range a)
 updateUpper = updateUpperWith . const
 
 updateLowerWith :: Ord a => (a -> a) -> Range a -> Maybe (Range a)
-updateLowerWith f (Range n m) = case compare n' m of 
-    GT -> Nothing
-    _  -> Just $ Range n' m
+updateLowerWith f (Range n m) = 
+    case compare n' m of 
+        GT -> Nothing
+        _  -> Just $ Range n' m
   where
     n' = f n
 
 updateUpperWith :: Ord a => (a -> a) -> Range a -> Maybe (Range a)
-updateUpperWith f (Range n m) = case compare n m' of 
-    GT -> Nothing
-    _  -> Just $ Range n m'
+updateUpperWith f (Range n m) = 
+    case compare n m' of 
+        GT -> Nothing
+        _  -> Just $ Range n m'
   where
     m' = f m
+

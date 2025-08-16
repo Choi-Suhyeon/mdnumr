@@ -24,11 +24,15 @@ dependencies:
 - optparse-applicative
 - finite-typelits
 - vector-sized
+- transformers
 - regex-tdfa
+- regex-base
 - bytestring
 - directory
+- filepath
 - vector
 - extra
+- array
 - text
 - mtl
 

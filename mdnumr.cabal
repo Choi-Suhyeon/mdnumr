@@ -27,7 +27,6 @@ library
   exposed-modules:
       CliOptions
       Lib
-      Test
       Util
   other-modules:
       Paths_mdnumr
@@ -37,15 +36,19 @@ library
       src
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
   build-depends:
-      base >=4.7 && <5
+      array
+    , base >=4.7 && <5
     , bytestring
     , directory
     , extra
+    , filepath
     , finite-typelits
     , mtl
     , optparse-applicative
+    , regex-base
     , regex-tdfa
     , text
+    , transformers
     , vector
     , vector-sized
   default-language: Haskell2010
@@ -60,16 +63,20 @@ executable mdnumr-exe
       app
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      array
+    , base >=4.7 && <5
     , bytestring
     , directory
     , extra
+    , filepath
     , finite-typelits
     , mdnumr
     , mtl
     , optparse-applicative
+    , regex-base
     , regex-tdfa
     , text
+    , transformers
     , vector
     , vector-sized
   default-language: Haskell2010
@@ -85,16 +92,20 @@ test-suite mdnumr-test
       test
   ghc-options: -Wall -Wcompat -Widentities -Wincomplete-record-updates -Wincomplete-uni-patterns -Wmissing-export-lists -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints -threaded -rtsopts -with-rtsopts=-N
   build-depends:
-      base >=4.7 && <5
+      array
+    , base >=4.7 && <5
     , bytestring
     , directory
     , extra
+    , filepath
     , finite-typelits
     , mdnumr
     , mtl
     , optparse-applicative
+    , regex-base
     , regex-tdfa
     , text
+    , transformers
     , vector
     , vector-sized
   default-language: Haskell2010

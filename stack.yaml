@@ -20,6 +20,12 @@
 snapshot:
   url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/24/4.yaml
 
+ghc-options:
+  "$locals": -Wall -Wcompat -Widentities -Wincomplete-record-updates
+             -Wincomplete-uni-patterns -Wmissing-export-lists
+             -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+
+
 # User packages to be built.
 # Various formats can be used as shown in the example below.
 #

@@ -9,29 +9,30 @@ import Options.Applicative
     , eitherReader    , metavar , value      , info
     , parserFailure   , header  , fullDesc   , progDesc
     , renderFailure   , helper  , infoOption , hidden
-    , simpleVersioner
+    , simpleVersioner , flag
     )
 import Options.Applicative.Builder (ParseError(..), prefs, columns)
 import Control.Applicative         ((<**>), some)
 import Data.Either.Extra           (maybeToEither)
 import Text.Regex.TDFA             ((=~))
 import Data.Function               (on)
+import GHC.TypeLits                (KnownNat)
 import Data.Version                (showVersion)
+import Data.Finite                 (Finite, packFinite)
 import Data.Maybe                  (fromJust)
 
 import Paths_mdnumr (version)
 
-import Util (HeadingRange, mkRange)
+import Util (StartBase(..), PrintRange, mkRange)
 
 
 data CmdLineArgs
     = CmdLineArgs 
     { fileNames     :: [FilePath]
-    , zeroBased     :: Bool  
+    , base          :: StartBase 
     , backupEnabled :: Bool
-    , range         :: HeadingRange
+    , range         :: PrintRange
     }
-  deriving (Show)
 
 progName :: String
 progName = "mdnumr"
@@ -47,7 +48,7 @@ pCmdLineArgs = CmdLineArgs <$> pArgs <*> pZeroBased <*> pBackupEnabled <*> pRang
   where
     pArgs = some $ argument str $ metavar "FILES"
 
-    pZeroBased = switch
+    pZeroBased = flag OneBased ZeroBased
         $  short 'z'
         <> long "set-zero"
         <> help  "Start numbering from zero"
@@ -62,17 +63,20 @@ pCmdLineArgs = CmdLineArgs <$> pArgs <*> pZeroBased <*> pBackupEnabled <*> pRang
         <> long            "range"
         <> help            "Specify the range of header levels to number"
         <> metavar         "N-M"
-        <> value           (fromJust $ mkRange 1 6)
+        <> value           (fromJust $ on mkRange partialPackFinite 1 6)
         <> showDefaultWith (const "1-6")
 
-    rangeReader :: ReadM HeadingRange
+    rangeReader :: ReadM PrintRange
     rangeReader = eitherReader \s ->
         case s =~ "^([1-6])-([1-6])$" :: [[String]] of
-            [[_, a, b]] -> maybeToEither rangeErrMsg $ (mkRange `on` read) a b
+            [[_, a, b]] -> maybeToEither rangeErrMsg $ (mkRange `on` (partialPackFinite . read)) a b
             _           -> Left formatErrMsg
       where
         rangeErrMsg  = "Invalid format: N-M with 1 ≤ N ≤ M ≤ 6"
         formatErrMsg = "Invalid format: must be N-M with digits 1–6"
+
+    partialPackFinite :: KnownNat n => Integer -> Finite n
+    partialPackFinite = fromJust . packFinite
 
 manOpt :: Parser (a -> a)
 manOpt = infoOption (helpAndExtra opts)
